@@ -7,7 +7,7 @@
 
 import UIKit
 
-class Section {
+class Section: Codable {
     let title: String
     let options: [String]
     var isOpened: Bool = false
@@ -16,6 +16,30 @@ class Section {
         self.title = title
         self.options = options
         self.isOpened = isOpened
+    }
+}
+
+extension URL {
+    static var sections: URL {
+        let applicationSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        let bundleID = Bundle.main.bundleIdentifier ?? "company name"
+        let subDirectory = applicationSupport.appendingPathComponent(bundleID, isDirectory: true)
+        try? FileManager.default.createDirectory(at: subDirectory, withIntermediateDirectories: true, attributes: nil)
+        return subDirectory.appendingPathComponent("sections.json")
+    }
+}
+
+class Shared {
+    static let instance = Shared()
+    private init() { }
+    var sections: [Section] {
+        get {
+            guard let data = try? Data(contentsOf: .sections) else { return [] }
+            return (try? JSONDecoder().decode([Section].self, from: data)) ?? []
+        }
+        set {
+            try? JSONEncoder().encode(newValue).write(to: .sections)
+        }
     }
 }
 
@@ -31,14 +55,9 @@ class JournalViewController: UIViewController, UITableViewDelegate, UITableViewD
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         title = "Journal"
         
-        sections = [
-            Section(title: "May 6", options: ["   Here is a long journal entry. We want to be able to see everything."]),
-            Section(title: "May 7", options: ["   Second entry"]),
-            Section(title: "May 8", options: ["   Third entry"])
-        ]
+        sections = Shared.instance.sections
         
         view.addSubview(tableView)
         tableView.delegate = self
@@ -63,6 +82,7 @@ class JournalViewController: UIViewController, UITableViewDelegate, UITableViewD
                     DispatchQueue.main.async {
                         self.sections.append(Section(title: dateText, options: ["   " + entryText]))
                         self.tableView.reloadData()
+                        Shared.instance.sections.append(Section(title: dateText, options: ["   " + entryText]))
                     }
                 }
             }
