@@ -58,15 +58,11 @@ class JournalViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         alert.addAction(UIAlertAction(title: "Done", style: .default, handler: { (_) in
-            if let field = alert.textFields?.first {
-                if let text = field.text, !text.isEmpty {
-                    if let field2 = alert.textFields?.last {
-                        if let text2 = field2.text, !text2.isEmpty {
-                            DispatchQueue.main.async {
-                                self.sections.append(Section(title: text, options: ["   " + text2]))
-                                self.tableView.reloadData()
-                            }
-                        }
+            if let field = alert.textFields?.first, let field2 = alert.textFields?.last {
+                if let text = field.text, let text2 = field2.text, !text.isEmpty, !text2.isEmpty {
+                    DispatchQueue.main.async {
+                        self.sections.append(Section(title: text, options: ["   " + text2]))
+                        self.tableView.reloadData()
                     }
                 }
             }
