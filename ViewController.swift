@@ -110,7 +110,6 @@ class JournalViewController: UIViewController, UITableViewDelegate, UITableViewD
             cell.textLabel?.text = sections[indexPath.section].title
         }
         else {
-            
             cell.textLabel?.text = sections[indexPath.section].options[indexPath.row - 1]
         }
         return cell
