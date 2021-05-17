@@ -35,15 +35,43 @@ class JournalViewController: UIViewController, UITableViewDelegate, UITableViewD
         title = "Journal"
         
         sections = [
-            Section(title: "May 6", options: [" Here is a long journal entry. We want to be able to see everything."]),
-            Section(title: "May 7", options: [" Second entry"]),
-            Section(title: "May 8", options: [" Third entry"])
+            Section(title: "May 6", options: ["   Here is a long journal entry. We want to be able to see everything."]),
+            Section(title: "May 7", options: ["   Second entry"]),
+            Section(title: "May 8", options: ["   Third entry"])
         ]
         
         view.addSubview(tableView)
         tableView.delegate = self
         tableView.dataSource = self
         tableView.frame = view.bounds
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(didTapAdd))
+    }
+    
+    @objc private func didTapAdd() {
+        let alert = UIAlertController(title: "New Journal Entry", message: "", preferredStyle: .alert)
+        alert.addTextField { field in
+            field.placeholder = "Enter date..."
+        }
+        alert.addTextField { field in
+            field.placeholder = "Enter journal entry..."
+        }
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "Done", style: .default, handler: { (_) in
+            if let field = alert.textFields?.first {
+                if let text = field.text, !text.isEmpty {
+                    if let field2 = alert.textFields?.last {
+                        if let text2 = field2.text, !text2.isEmpty {
+                            DispatchQueue.main.async {
+                                self.sections.append(Section(title: text, options: ["   " + text2]))
+                                self.tableView.reloadData()
+                            }
+                        }
+                    }
+                }
+            }
+        }))
+        present(alert, animated: true)
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -97,9 +125,9 @@ class MedicineViewController: UIViewController, UITableViewDelegate, UITableView
         title = "Medicines"
         
         sections = [
-            Section(title: "Medicine A", options: [" Started May 6, 2021", " Take once a day before bed"]),
-            Section(title: "Medicine B", options: [" Started May 7, 2021", " Apply every morning and night"]),
-            Section(title: "Medicine C", options: [" Started May 8, 2021", " Use to treat allergies"])
+            Section(title: "Medicine A", options: ["   Started May 6, 2021", "   Take once a day before bed"]),
+            Section(title: "Medicine B", options: ["   Started May 7, 2021", "   Apply every morning and night"]),
+            Section(title: "Medicine C", options: ["   Started May 8, 2021", "   Use to treat allergies"])
         ]
         
         view.addSubview(tableView)
@@ -159,9 +187,9 @@ class ClinicViewController: UIViewController, UITableViewDelegate, UITableViewDa
         title = "Clinics"
         
         sections = [
-            Section(title: "Clinic A", options: [" Address: 1234 NW Clinic St Portland, OR", " (503) 123-4567"]),
-            Section(title: "Hospital B", options: [" Address: 5678 SE Hospital St Portland, OR", " (971) 765-4321"]),
-            Section(title: "Dentist C", options: [" Address: 9876 SW Dentist St Portland, OR", " (503) 321-7654"])
+            Section(title: "Clinic A", options: ["   Address: 1234 NW Clinic St Portland, OR", "   (503) 123-4567"]),
+            Section(title: "Hospital B", options: ["   Address: 5678 SE Hospital St Portland, OR", "   (971) 765-4321"]),
+            Section(title: "Dentist C", options: ["   Address: 9876 SW Dentist St Portland, OR", "   (503) 321-7654"])
         ]
         
         view.addSubview(tableView)
