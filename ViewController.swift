@@ -30,22 +30,24 @@ class JournalViewController: UIViewController, UITableViewDelegate, UITableViewD
     @objc private func didTapAdd() {
         let alert = UIAlertController(title: "New Journal Entry", message: "", preferredStyle: .alert)
         alert.addTextField { field in
-            field.placeholder = "Enter journal..."
+            field.placeholder = "Enter date..."
         }
         alert.addTextField { field in
-            field.placeholder = "Enter other stuff..."
+            field.placeholder = "Enter journal entry..."
         }
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         alert.addAction(UIAlertAction(title: "Done", style: .default, handler: { [weak self] (_) in
-            if let field = alert.textFields?[0] {
-                if let text = field.text, !text.isEmpty {
-                    DispatchQueue.main.async {
-                        var currentItems = UserDefaults.standard.stringArray(forKey: "journal") ?? []
-                        currentItems.append(text)
-                        UserDefaults.standard.setValue(currentItems, forKey: "journal")
-                        self?.items.append(text)
-                        self?.tableView.reloadData()
-                    }
+            let dateField = alert.textFields?[0]
+            let entryField = alert.textFields?[1]
+            var text = dateField!.text!
+            if !text.isEmpty {
+                text = dateField!.text! + "\n" + entryField!.text!
+                DispatchQueue.main.async {
+                    var currentItems = UserDefaults.standard.stringArray(forKey: "journal") ?? []
+                    currentItems.append(text)
+                    UserDefaults.standard.setValue(currentItems, forKey: "journal")
+                    self?.items.append(text)
+                    self?.tableView.reloadData()
                 }
             }
         }))
@@ -115,19 +117,25 @@ class MedicineViewController: UIViewController, UITableViewDelegate, UITableView
             field.placeholder = "Enter medicine..."
         }
         alert.addTextField { field in
-            field.placeholder = "Enter other stuff..."
+            field.placeholder = "Enter date started..."
+        }
+        alert.addTextField { field in
+            field.placeholder = "Enter usage info..."
         }
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         alert.addAction(UIAlertAction(title: "Done", style: .default, handler: { [weak self] (_) in
-            if let field = alert.textFields?[0] {
-                if let text = field.text, !text.isEmpty {
-                    DispatchQueue.main.async {
-                        var currentItems = UserDefaults.standard.stringArray(forKey: "medicines") ?? []
-                        currentItems.append(text)
-                        UserDefaults.standard.setValue(currentItems, forKey: "medicines")
-                        self?.items.append(text)
-                        self?.tableView.reloadData()
-                    }
+            let medicineField = alert.textFields?[0]
+            let dateField = alert.textFields?[1]
+            let usageField = alert.textFields?[2]
+            var text = medicineField!.text!
+            if !text.isEmpty {
+                text = medicineField!.text! + "\n" + dateField!.text! + "\n" + usageField!.text!
+                DispatchQueue.main.async {
+                    var currentItems = UserDefaults.standard.stringArray(forKey: "medicines") ?? []
+                    currentItems.append(text)
+                    UserDefaults.standard.setValue(currentItems, forKey: "medicines")
+                    self?.items.append(text)
+                    self?.tableView.reloadData()
                 }
             }
         }))
@@ -197,19 +205,25 @@ class ClinicViewController: UIViewController, UITableViewDelegate, UITableViewDa
             field.placeholder = "Enter clinic..."
         }
         alert.addTextField { field in
-            field.placeholder = "Enter other stuff..."
+            field.placeholder = "Enter phone number..."
+        }
+        alert.addTextField { field in
+            field.placeholder = "Enter date of last visit..."
         }
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         alert.addAction(UIAlertAction(title: "Done", style: .default, handler: { [weak self] (_) in
-            if let field = alert.textFields?[0] {
-                if let text = field.text, !text.isEmpty {
-                    DispatchQueue.main.async {
-                        var currentItems = UserDefaults.standard.stringArray(forKey: "clinics") ?? []
-                        currentItems.append(text)
-                        UserDefaults.standard.setValue(currentItems, forKey: "clinics")
-                        self?.items.append(text)
-                        self?.tableView.reloadData()
-                    }
+            let clinicField = alert.textFields?[0]
+            let phoneField = alert.textFields?[1]
+            let dateField = alert.textFields?[2]
+            var text = clinicField!.text!
+            if !text.isEmpty {
+                text = clinicField!.text! + "\n" + phoneField!.text! + "\n" + dateField!.text!
+                DispatchQueue.main.async {
+                    var currentItems = UserDefaults.standard.stringArray(forKey: "clinics") ?? []
+                    currentItems.append(text)
+                    UserDefaults.standard.setValue(currentItems, forKey: "clinics")
+                    self?.items.append(text)
+                    self?.tableView.reloadData()
                 }
             }
         }))
