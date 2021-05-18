@@ -124,7 +124,7 @@ class JournalViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
 }
 
-class MedicineViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class MedicineViewController: UIViewController, UITableViewDataSource {
     
     private let tableView: UITableView = {
         let tableView = UITableView()
@@ -132,56 +132,68 @@ class MedicineViewController: UIViewController, UITableViewDelegate, UITableView
         return tableView
     }()
     
-    private var sections = [Section]()
-
+    var items = [String]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        self.items = UserDefaults.standard.stringArray(forKey: "medicines") ?? []
         title = "Medicines"
-        
-        sections = [
-            Section(title: "Medicine A", options: ["   Started May 6, 2021", "   Take once a day before bed"]),
-            Section(title: "Medicine B", options: ["   Started May 7, 2021", "   Apply every morning and night"]),
-            Section(title: "Medicine C", options: ["   Started May 8, 2021", "   Use to treat allergies"])
-        ]
-        
         view.addSubview(tableView)
-        tableView.delegate = self
         tableView.dataSource = self
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(didTapAdd))
+    }
+    
+    @objc private func didTapAdd() {
+        let alert = UIAlertController(title: "New Medicine Entry", message: "", preferredStyle: .alert)
+        alert.addTextField { field in
+            field.placeholder = "Enter medicine..."
+        }
+        alert.addTextField { field in
+            field.placeholder = "Enter other stuff..."
+        }
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "Done", style: .default, handler: { [weak self] (_) in
+            if let field = alert.textFields?[0] {
+                if let text = field.text, !text.isEmpty {
+                    DispatchQueue.main.async {
+                        var currentItems = UserDefaults.standard.stringArray(forKey: "medicines") ?? []
+                        currentItems.append(text)
+                        UserDefaults.standard.setValue(currentItems, forKey: "medicines")
+                        self?.items.append(text)
+                        self?.tableView.reloadData()
+                    }
+                }
+            }
+        }))
+        present(alert, animated: true)
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
         tableView.frame = view.bounds
     }
     
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return sections.count
-    }
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let section = sections[section]
-        if section.isOpened {
-            return section.options.count + 1
-        }
-        else {
-            return 1
-        }
+        return items.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        if indexPath.row == 0 {
-            cell.textLabel?.text = sections[indexPath.section].title
-        }
-        else {
-            
-            cell.textLabel?.text = sections[indexPath.section].options[indexPath.row - 1]
-        }
+        cell.textLabel?.text = items[indexPath.row]
         return cell
     }
-
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
-        if indexPath.row == 0 {
-            sections[indexPath.section].isOpened = !sections[indexPath.section].isOpened
-            tableView.reloadSections([indexPath.section], with: .none)
+    
+    func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
+        return .delete
+    }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            tableView.beginUpdates()
+            items.remove(at: indexPath.row)
+            UserDefaults.standard.setValue(items, forKey: "medicines")
+            tableView.deleteRows(at: [indexPath], with: .fade)
+            tableView.endUpdates()
         }
     }
 }
