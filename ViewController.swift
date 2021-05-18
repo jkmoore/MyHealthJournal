@@ -7,7 +7,7 @@
 
 import UIKit
 
-class JournalViewController: UIViewController, UITableViewDataSource {
+class JournalViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     private let tableView: UITableView = {
         let tableView = UITableView()
@@ -22,6 +22,7 @@ class JournalViewController: UIViewController, UITableViewDataSource {
         self.items = UserDefaults.standard.stringArray(forKey: "journal") ?? []
         title = "Journal"
         view.addSubview(tableView)
+        tableView.delegate = self
         tableView.dataSource = self
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(didTapAdd))
     }
@@ -79,9 +80,16 @@ class JournalViewController: UIViewController, UITableViewDataSource {
             tableView.endUpdates()
         }
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        let alert = UIAlertController(title: "", message: items[indexPath.row], preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Close", style: .default, handler: nil))
+        present(alert, animated: true)
+    }
 }
 
-class MedicineViewController: UIViewController, UITableViewDataSource {
+class MedicineViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     private let tableView: UITableView = {
         let tableView = UITableView()
@@ -96,6 +104,7 @@ class MedicineViewController: UIViewController, UITableViewDataSource {
         self.items = UserDefaults.standard.stringArray(forKey: "medicines") ?? []
         title = "Medicines"
         view.addSubview(tableView)
+        tableView.delegate = self
         tableView.dataSource = self
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(didTapAdd))
     }
@@ -153,9 +162,16 @@ class MedicineViewController: UIViewController, UITableViewDataSource {
             tableView.endUpdates()
         }
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        let alert = UIAlertController(title: "", message: items[indexPath.row], preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Close", style: .default, handler: nil))
+        present(alert, animated: true)
+    }
 }
 
-class ClinicViewController: UIViewController, UITableViewDataSource {
+class ClinicViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     private let tableView: UITableView = {
         let tableView = UITableView()
@@ -170,6 +186,7 @@ class ClinicViewController: UIViewController, UITableViewDataSource {
         self.items = UserDefaults.standard.stringArray(forKey: "clinics") ?? []
         title = "Clinics"
         view.addSubview(tableView)
+        tableView.delegate = self
         tableView.dataSource = self
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(didTapAdd))
     }
@@ -226,5 +243,12 @@ class ClinicViewController: UIViewController, UITableViewDataSource {
             tableView.deleteRows(at: [indexPath], with: .fade)
             tableView.endUpdates()
         }
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        let alert = UIAlertController(title: "", message: items[indexPath.row], preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Close", style: .default, handler: nil))
+        present(alert, animated: true)
     }
 }
